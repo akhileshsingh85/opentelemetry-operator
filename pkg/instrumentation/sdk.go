@@ -41,6 +41,9 @@ import (
 const (
 	volumeName        = "opentelemetry-auto-instrumentation"
 	initContainerName = "opentelemetry-auto-instrumentation"
+	successful        = "successful"
+	failed            = "failed"
+	ignored           = "ignored"
 )
 
 // inject a new sidecar container to the given pod, based on the given OpenTelemetryCollector.
@@ -58,6 +61,7 @@ func (i *sdkInjector) inject(ctx context.Context, insts languageInstrumentations
 	// We search for specific container to inject variables and if no one is found
 	// We fallback to first container
 	var index = 0
+	autoInstrumentation := ignored
 	for idx, ctnair := range pod.Spec.Containers {
 		if ctnair.Name == containerName {
 			index = idx
@@ -71,9 +75,11 @@ func (i *sdkInjector) inject(ctx context.Context, insts languageInstrumentations
 		pod, err = injectJavaagent(otelinst.Spec.Java, pod, index)
 		if err != nil {
 			i.logger.Info("Skipping javaagent injection", "reason", err.Error(), "container", pod.Spec.Containers[index].Name)
+			autoInstrumentation = failed
 		} else {
 			pod = i.injectCommonEnvVar(otelinst, pod, index)
 			pod = i.injectCommonSDKConfig(ctx, otelinst, ns, pod, index)
+			autoInstrumentation = successful
 		}
 	}
 	if insts.NodeJS != nil {
@@ -83,9 +89,11 @@ func (i *sdkInjector) inject(ctx context.Context, insts languageInstrumentations
 		pod, err = injectNodeJSSDK(otelinst.Spec.NodeJS, pod, index)
 		if err != nil {
 			i.logger.Info("Skipping NodeJS SDK injection", "reason", err.Error(), "container", pod.Spec.Containers[index].Name)
+			autoInstrumentation = failed
 		} else {
 			pod = i.injectCommonEnvVar(otelinst, pod, index)
 			pod = i.injectCommonSDKConfig(ctx, otelinst, ns, pod, index)
+			autoInstrumentation = successful
 		}
 	}
 	if insts.Python != nil {
@@ -95,9 +103,11 @@ func (i *sdkInjector) inject(ctx context.Context, insts languageInstrumentations
 		pod, err = injectPythonSDK(otelinst.Spec.Python, pod, index)
 		if err != nil {
 			i.logger.Info("Skipping Python SDK injection", "reason", err.Error(), "container", pod.Spec.Containers[index].Name)
+			autoInstrumentation = failed
 		} else {
 			pod = i.injectCommonEnvVar(otelinst, pod, index)
 			pod = i.injectCommonSDKConfig(ctx, otelinst, ns, pod, index)
+			autoInstrumentation = successful
 		}
 	}
 	if insts.DotNet != nil {
@@ -107,9 +117,11 @@ func (i *sdkInjector) inject(ctx context.Context, insts languageInstrumentations
 		pod, err = injectDotNetSDK(otelinst.Spec.DotNet, pod, index)
 		if err != nil {
 			i.logger.Info("Skipping DotNet SDK injection", "reason", err.Error(), "container", pod.Spec.Containers[index].Name)
+			autoInstrumentation = failed
 		} else {
 			pod = i.injectCommonEnvVar(otelinst, pod, index)
 			pod = i.injectCommonSDKConfig(ctx, otelinst, ns, pod, index)
+			autoInstrumentation = successful
 		}
 	}
 	if insts.Sdk != nil {
@@ -117,7 +129,9 @@ func (i *sdkInjector) inject(ctx context.Context, insts languageInstrumentations
 		i.logger.V(1).Info("injecting sdk-only instrumentation into pod", "otelinst-namespace", otelinst.Namespace, "otelinst-name", otelinst.Name)
 		pod = i.injectCommonEnvVar(otelinst, pod, index)
 		pod = i.injectCommonSDKConfig(ctx, otelinst, ns, pod, index)
+		autoInstrumentation = successful
 	}
+	pod.Labels["otel.auto-instrumentation.state"] = autoInstrumentation
 	return pod
 }
 

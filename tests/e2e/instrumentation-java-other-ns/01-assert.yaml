@@ -6,6 +6,7 @@ metadata:
     instrumentation.opentelemetry.io/inject-java: "my-other-ns/java"
   labels:
     app: my-pod-with-sidecar
+    otel.auto-instrumentation.state: "successful"
 spec:
   containers:
   - name: myapp
