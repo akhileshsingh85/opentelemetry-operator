@@ -131,6 +131,9 @@ func (i *sdkInjector) inject(ctx context.Context, insts languageInstrumentations
 		pod = i.injectCommonSDKConfig(ctx, otelinst, ns, pod, index)
 		autoInstrumentation = successful
 	}
+	if pod.Labels == nil {
+		pod.Labels = make(map[string]string)
+	}
 	pod.Labels["otel.auto-instrumentation.state"] = autoInstrumentation
 	return pod
 }
