@@ -119,6 +119,7 @@ func TestMutatePod(t *testing.T) {
 					Annotations: map[string]string{
 						annotationInjectJava: "true",
 					},
+					Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
 				},
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
@@ -291,6 +292,7 @@ func TestMutatePod(t *testing.T) {
 					Annotations: map[string]string{
 						annotationInjectNodeJS: "true",
 					},
+					Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
 				},
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
@@ -460,6 +462,7 @@ func TestMutatePod(t *testing.T) {
 					Annotations: map[string]string{
 						annotationInjectPython: "true",
 					},
+					Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
 				},
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
@@ -625,6 +628,7 @@ func TestMutatePod(t *testing.T) {
 					Annotations: map[string]string{
 						annotationInjectDotNet: "true",
 					},
+					Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
 				},
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{

@@ -400,7 +400,10 @@ func TestInjectJava(t *testing.T) {
 				},
 			},
 		}, "")
-	assert.Equal(t, corev1.Pod{
+	testPod := corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
+		},
 		Spec: corev1.PodSpec{
 			Volumes: []corev1.Volume{
 				{
@@ -467,7 +470,8 @@ func TestInjectJava(t *testing.T) {
 				},
 			},
 		},
-	}, pod)
+	}
+	assert.Equal(t, testPod, pod)
 }
 
 func TestInjectNodeJS(t *testing.T) {
@@ -499,6 +503,9 @@ func TestInjectNodeJS(t *testing.T) {
 			},
 		}, "")
 	assert.Equal(t, corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
+		},
 		Spec: corev1.PodSpec{
 			Volumes: []corev1.Volume{
 				{
@@ -598,6 +605,9 @@ func TestInjectPython(t *testing.T) {
 			},
 		}, "")
 	assert.Equal(t, corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
+		},
 		Spec: corev1.PodSpec{
 			Volumes: []corev1.Volume{
 				{
@@ -704,6 +714,9 @@ func TestInjectDotNet(t *testing.T) {
 			},
 		}, "")
 	assert.Equal(t, corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
+		},
 		Spec: corev1.PodSpec{
 			Volumes: []corev1.Volume{
 				{
@@ -824,6 +837,9 @@ func TestInjectSdkOnly(t *testing.T) {
 			},
 		}, "")
 	assert.Equal(t, corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels: map[string]string{"otel.auto-instrumentation.state": "successful"},
+		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
 				{
